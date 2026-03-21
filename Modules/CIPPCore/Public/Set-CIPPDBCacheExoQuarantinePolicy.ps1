@@ -5,21 +5,25 @@ function Set-CIPPDBCacheExoQuarantinePolicy {
 
     .PARAMETER TenantFilter
         The tenant to cache Quarantine policy data for
+
+    .PARAMETER QueueId
+        The queue ID to update with total tasks (optional)
     #>
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
-        [string]$TenantFilter
+        [string]$TenantFilter,
+        [string]$QueueId
     )
 
     try {
-        Write-LogMessage -API 'CIPPDBCache' -tenant $TenantFilter -message 'Caching Exchange Quarantine policies' -sev Info
+        Write-LogMessage -API 'CIPPDBCache' -tenant $TenantFilter -message 'Caching Exchange Quarantine policies' -sev Debug
 
         $QuarantinePolicies = New-ExoRequest -tenantid $TenantFilter -cmdlet 'Get-QuarantinePolicy'
         if ($QuarantinePolicies) {
             Add-CIPPDbItem -TenantFilter $TenantFilter -Type 'ExoQuarantinePolicy' -Data $QuarantinePolicies
             Add-CIPPDbItem -TenantFilter $TenantFilter -Type 'ExoQuarantinePolicy' -Data $QuarantinePolicies -Count
-            Write-LogMessage -API 'CIPPDBCache' -tenant $TenantFilter -message "Cached $($QuarantinePolicies.Count) Quarantine policies" -sev Info
+            Write-LogMessage -API 'CIPPDBCache' -tenant $TenantFilter -message "Cached $($QuarantinePolicies.Count) Quarantine policies" -sev Debug
         }
         $QuarantinePolicies = $null
 

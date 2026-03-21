@@ -5,21 +5,25 @@ function Set-CIPPDBCacheExoAntiPhishPolicy {
 
     .PARAMETER TenantFilter
         The tenant to cache Anti-Phish policy data for
+
+    .PARAMETER QueueId
+        The queue ID to update with total tasks (optional)
     #>
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
-        [string]$TenantFilter
+        [string]$TenantFilter,
+        [string]$QueueId
     )
 
     try {
-        Write-LogMessage -API 'CIPPDBCache' -tenant $TenantFilter -message 'Caching Exchange Anti-Phish policies (detailed)' -sev Info
+        Write-LogMessage -API 'CIPPDBCache' -tenant $TenantFilter -message 'Caching Exchange Anti-Phish policies (detailed)' -sev Debug
 
         $AntiPhishPolicies = New-ExoRequest -tenantid $TenantFilter -cmdlet 'Get-AntiPhishPolicy'
         if ($AntiPhishPolicies) {
             Add-CIPPDbItem -TenantFilter $TenantFilter -Type 'ExoAntiPhishPolicy' -Data $AntiPhishPolicies
             Add-CIPPDbItem -TenantFilter $TenantFilter -Type 'ExoAntiPhishPolicy' -Data $AntiPhishPolicies -Count
-            Write-LogMessage -API 'CIPPDBCache' -tenant $TenantFilter -message "Cached $($AntiPhishPolicies.Count) Anti-Phish policies (detailed)" -sev Info
+            Write-LogMessage -API 'CIPPDBCache' -tenant $TenantFilter -message "Cached $($AntiPhishPolicies.Count) Anti-Phish policies (detailed)" -sev Debug
         }
         $AntiPhishPolicies = $null
 

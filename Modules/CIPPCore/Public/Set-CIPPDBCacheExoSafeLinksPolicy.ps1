@@ -5,21 +5,25 @@ function Set-CIPPDBCacheExoSafeLinksPolicy {
 
     .PARAMETER TenantFilter
         The tenant to cache Safe Links policy data for
+
+    .PARAMETER QueueId
+        The queue ID to update with total tasks (optional)
     #>
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
-        [string]$TenantFilter
+        [string]$TenantFilter,
+        [string]$QueueId
     )
 
     try {
-        Write-LogMessage -API 'CIPPDBCache' -tenant $TenantFilter -message 'Caching Exchange Safe Links policies (detailed)' -sev Info
+        Write-LogMessage -API 'CIPPDBCache' -tenant $TenantFilter -message 'Caching Exchange Safe Links policies (detailed)' -sev Debug
 
         $SafeLinksPolicies = New-ExoRequest -tenantid $TenantFilter -cmdlet 'Get-SafeLinksPolicy'
         if ($SafeLinksPolicies) {
             Add-CIPPDbItem -TenantFilter $TenantFilter -Type 'ExoSafeLinksPolicy' -Data $SafeLinksPolicies
             Add-CIPPDbItem -TenantFilter $TenantFilter -Type 'ExoSafeLinksPolicy' -Data $SafeLinksPolicies -Count
-            Write-LogMessage -API 'CIPPDBCache' -tenant $TenantFilter -message "Cached $($SafeLinksPolicies.Count) Safe Links policies (detailed)" -sev Info
+            Write-LogMessage -API 'CIPPDBCache' -tenant $TenantFilter -message "Cached $($SafeLinksPolicies.Count) Safe Links policies (detailed)" -sev Debug
         }
         $SafeLinksPolicies = $null
 
