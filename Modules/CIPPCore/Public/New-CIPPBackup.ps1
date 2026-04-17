@@ -38,6 +38,7 @@ function New-CIPPBackup {
                         'AccessRoleGroups'
                         'ApiClients'
                         'CippReplacemap'
+                        'CustomPowershellScripts'
                         'CustomData'
                         'CustomRoles'
                         'Config'
@@ -54,6 +55,8 @@ function New-CIPPBackup {
                         'WebhookRules'
                         'ScheduledTasks'
                         'TenantProperties'
+                        'TenantGroups'
+                        'TenantGroupMembers'
                     )
                     $CSVfile = foreach ($CSVTable in $BackupTables) {
                         $Table = Get-CippTable -tablename $CSVTable
@@ -145,6 +148,7 @@ function New-CIPPBackup {
         } catch {
             $ErrorMessage = Get-CippException -Exception $_
             Write-LogMessage -headers $Headers -API $APINAME -message "Blob upload failed: $($ErrorMessage.NormalizedError)" -Sev 'Error' -LogData $ErrorMessage
+            return [pscustomobject]@{'Results' = "Blob Upload failed: $($ErrorMessage.NormalizedError)" }
         }
 
         # Write table entity pointing to blob resource
